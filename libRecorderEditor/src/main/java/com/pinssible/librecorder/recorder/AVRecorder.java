@@ -79,7 +79,7 @@ public class AVRecorder {
 
     public void startRecording() {
         //create file
-        if(!recorderConfig.mOutputFile.exists()){
+        if (!recorderConfig.mOutputFile.exists()) {
             try {
                 recorderConfig.mOutputFile.createNewFile();
             } catch (IOException e) {
@@ -173,12 +173,20 @@ public class AVRecorder {
     /**
      * 聚焦
      */
-    public void focusAtPoint(float x, float y, final Camera.AutoFocusCallback callback){
+    public void focusAtPoint(float x, float y, final Camera.AutoFocusCallback callback) {
         cameraRender.focusAtPoint(x, y, callback);
     }
 
     public synchronized void autoFocus() {
         cameraRender.autoFocus();
+    }
+
+    public void stopPreview() {
+        cameraRender.stopPreview();
+    }
+
+    public void resumePreview() {
+        cameraRender.resumePreview();
     }
 
     private int getDisplayRotation(Context context) {

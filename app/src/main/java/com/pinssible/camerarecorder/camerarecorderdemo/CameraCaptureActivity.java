@@ -242,4 +242,16 @@ public class CameraCaptureActivity extends AppCompatActivity {
         recorder.release();
         super.onDestroy();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        recorder.resumePreview();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        recorder.stopPreview();
+    }
 }

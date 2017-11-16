@@ -159,7 +159,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
         }
         //filter
         if (mCurrentFilter != mNewFilter) {
-            Log.e(LOG_TAG,"change filter = " + mNewFilter);
+            Log.e(LOG_TAG, "change filter = " + mNewFilter);
             mPrevFilter = mCurrentFilter;
             if (mNewFilter == Filters.FILTER_GPU_LERP_BLUR && blurIntensity > 0) {
                 Filters.change2BlurMode(mFullScreenCamera, mPreviewViewport, blurIntensity);
@@ -225,7 +225,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
         mFullScreenCamera = new FullFrameRect(
                 Program.getDefaultProgram(mPreviewViewport));
         //init filter
-        if(Filters.getProgramType(previewConfig.getInitState().getFilter())!=  Program.getDefaultProgramType()){
+        if (Filters.getProgramType(previewConfig.getInitState().getFilter()) != Program.getDefaultProgramType()) {
             applyFilter(previewConfig.getInitState().getFilter());
         }
 
@@ -319,6 +319,17 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
         return parameters.getFlashMode();
     }
 
+    public void stopPreview() {
+        if (cameraInstance.isPreviewing())
+            cameraInstance.stopPreview();
+    }
+
+
+    public void resumePreview() {
+        if (!cameraInstance.isPreviewing() && mSurfaceTexture != null) {
+            cameraInstance.startPreview(mSurfaceTexture); //camera show texture
+        }
+    }
 
     /********************************************************************* Others Setting *************************************************************************************************************************************/
 
@@ -521,7 +532,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
     /**
      * 聚焦
      */
-    public void focusAtPoint(float x, float y, final Camera.AutoFocusCallback callback){
+    public void focusAtPoint(float x, float y, final Camera.AutoFocusCallback callback) {
         cameraInstance.focusAtPoint(x, y, callback);
     }
 
