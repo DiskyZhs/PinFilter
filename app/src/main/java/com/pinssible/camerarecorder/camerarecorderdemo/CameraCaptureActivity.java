@@ -38,7 +38,6 @@ public class CameraCaptureActivity extends AppCompatActivity {
 
     private PreviewConfig previewConfig;
 
-
     private boolean hasRecorder = false;
 
     private int filterType = 1;
@@ -55,9 +54,8 @@ public class CameraCaptureActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Utils.init(getApplication());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_camera);
 
         //view
         preview = findViewById(R.id.surface_show);

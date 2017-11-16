@@ -8,7 +8,6 @@ import android.media.MediaFormat;
 import java.io.IOException;
 
 /**
- * @hide
  */
 public class AudioEncoderCore extends AndroidEncoder {
 
@@ -61,7 +60,6 @@ public class AudioEncoderCore extends AndroidEncoder {
     /**
      * Depending on this method ties AudioEncoderCore
      * to a MediaCodec-based implementation.
-     * <p/>
      * However, when reading AudioRecord samples directly
      * to MediaCode's input ByteBuffer we can avoid a memory copy
      * TODO: Measure performance gain and remove if negligible

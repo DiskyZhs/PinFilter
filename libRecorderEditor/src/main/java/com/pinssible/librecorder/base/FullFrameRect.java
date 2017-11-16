@@ -29,7 +29,6 @@ import java.nio.FloatBuffer;
  * This class essentially represents a viewport-sized sprite that will be rendered with
  * a texture, usually from an external source like the camera or video decoder.
  *
- * @hide
  */
 public class FullFrameRect {
 

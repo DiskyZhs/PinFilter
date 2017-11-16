@@ -13,7 +13,6 @@ import com.pinssible.librecorder.filter.program.Texture2dProgram;
  * This class matches descriptive final int
  * variables to Texture2dProgram.ProgramType
  *
- * @hide
  */
 public class Filters {
     private static final String TAG = "Filters";
@@ -41,7 +40,7 @@ public class Filters {
     /**
      * Updates the filter on the provided FullFrameRect
      *
-     * @return the int code of the new filter
+     * the int code of the new filter
      */
     public static void updateFilter(FullFrameRect rect, int newFilter, Viewport viewport) {
         Program.ProgramType programType;

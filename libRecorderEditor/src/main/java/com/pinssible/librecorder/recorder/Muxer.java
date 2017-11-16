@@ -14,7 +14,6 @@ import java.nio.ByteBuffer;
  * Base Muxer class for interaction with MediaCodec based
  * encoders
  *
- * @hide
  */
 public abstract class Muxer {
     private static final String TAG = "Muxer";

@@ -15,7 +15,6 @@ import java.nio.ByteBuffer;
 /**
  * Created by davidbrodsky on 1/23/14.
  *
- * @hide
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MicrophoneEncoder implements Runnable {

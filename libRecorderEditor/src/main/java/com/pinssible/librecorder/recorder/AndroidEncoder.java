@@ -10,7 +10,6 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 
 /**
- * @hide
  */
 public abstract class AndroidEncoder {
     private final static String TAG = "AndroidEncoder";

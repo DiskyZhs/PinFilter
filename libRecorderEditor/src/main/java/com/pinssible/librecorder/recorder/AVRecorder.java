@@ -155,7 +155,7 @@ public class AVRecorder {
      * 开启模糊
      *
      * @param isBlur
-     * @param blurIntensity 模糊程度，越大越模糊，<=30
+     * @param blurIntensity
      */
     public void setBlurMode(boolean isBlur, int blurIntensity) {
         cameraRender.changeBlurMode(isBlur, blurIntensity);

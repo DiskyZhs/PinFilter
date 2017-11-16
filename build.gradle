@@ -8,8 +8,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0'
-        //bintray jcenter
-        classpath 'com.novoda:bintray-release:0.3.4'
+        //novoda
+        classpath 'com.novoda:bintray-release:0.7.0'
     }
 }
 
@@ -18,6 +18,11 @@ allprojects {
         google()
         jcenter()
     }
+
+    //添加
+        tasks.withType(Javadoc) {
+            options{ encoding "UTF-8" charSet 'UTF-8' links "http://docs.oracle.com/javase/7/docs/api" }
+        }
 }
 
 task clean(type: Delete) {

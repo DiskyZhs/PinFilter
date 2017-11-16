@@ -1,111 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.pinssible.camerarecorder.camerarecorderdemo.CameraCaptureActivity">
 
 
-    <android.opengl.GLSurfaceView
-        android:id="@+id/surface_show"
-        android:layout_width="480px"
-        android:layout_height="640px"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
-
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/surface_show">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/btn_record"
-                android:layout_width="90dp"
-                android:layout_height="50dp"
-
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
-                android:text="Start Recording"
-                android:textAllCaps="false"
-                android:textSize="10dp" />
-
-            <Button
-                android:id="@+id/btn_filter"
-                android:layout_width="90dp"
-                android:layout_height="50dp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:text="change filter"
-                android:textAllCaps="false"
-                android:textSize="10dp" />
-
-            <Button
-                android:id="@+id/btn_pic"
-                android:layout_width="90dp"
-                android:layout_height="50dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="10dp"
-                android:text="TakePhoto"
-                android:textAllCaps="false"
-                android:textSize="10dp" />
-
-
-            <Button
-                android:id="@+id/btn_switch_camera"
-                android:layout_width="90dp"
-                android:layout_height="50dp"
-                android:layout_below="@+id/btn_record"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
-                android:text="Switch Camera"
-                android:textAllCaps="false"
-                android:textSize="10dp" />
-
-
-            <Button
-                android:id="@+id/btn_flash"
-                android:layout_width="90dp"
-                android:layout_height="50dp"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/btn_record"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="10dp"
-                android:text="toggle flash"
-                android:textAllCaps="false"
-                android:textSize="10dp" />
-
-            <Button
-                android:id="@+id/btn_blur"
-                android:layout_width="90dp"
-                android:layout_height="50dp"
-                android:layout_below="@+id/btn_record"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:text="to Blur"
-                android:textAllCaps="false"
-                android:textSize="10dp" />
-
-            <SeekBar
-                android:id="@+id/seek_blur_intensity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/btn_blur"
-                android:layout_centerHorizontal="true"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="10dp"
-                android:max="30"
-                android:min="0"
-                android:progress="10"
-                android:visibility="gone" />
-
-        </RelativeLayout>
-    </ScrollView>
-</RelativeLayout>
+</LinearLayout>

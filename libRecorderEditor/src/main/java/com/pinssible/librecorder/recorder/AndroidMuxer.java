@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * @hide
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class AndroidMuxer extends Muxer {

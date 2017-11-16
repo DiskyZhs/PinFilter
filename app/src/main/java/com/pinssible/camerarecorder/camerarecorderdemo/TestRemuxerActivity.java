@@ -38,10 +38,6 @@ import java.util.List;
 
 public class TestRemuxerActivity extends Activity implements RemuxerFactory.OnRemuxListener {
     private final String TAG = "TestRemuxerActivity";
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     //View
     private TextView srcText, dstText;
@@ -61,22 +57,11 @@ public class TestRemuxerActivity extends Activity implements RemuxerFactory.OnRe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Utils.init(getApplication());
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.layout_test_texture_view_output);
 
-        //权限检测申请
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE);
-        }
         //view
         initView();
     }
