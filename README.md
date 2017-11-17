@@ -1,8 +1,10 @@
 # PinFilter
 [![CocoaPods](https://img.shields.io/badge/Android%20-4.3%2B-brightgreen.svg)]()     [![CircleCI](https://img.shields.io/circleci/project/github/RedSparr0w/node-csgo-parser.svg)]()
-<br/>
+----
+
 @[Filter, Camera, Player, Recorder]
 
+----
 ##Introduction
 - PinFilter is a libary for android which can be used to add filter to mp4.
 - PinFilter is based on Android MediaCodec and MediaMuxer,All video decode or encode by hardware.
@@ -16,7 +18,8 @@
 
 ## Preview
 ![](ezgif.com-optimize.gif)
-<br/>
+
+----
 
 ##Getting started
 - In your ` build.gradle`:
@@ -29,7 +32,6 @@
     dependencies {
     compile project(path: ':libRecorderEditor')
     }
-
 
 ##Usage
 - reference demo project
