@@ -3,8 +3,6 @@
 
 @[Filter, Camera, Player, Recorder]
 
-[TOC]
-
 ##Introduction
 - PinFilter is a libary for android which can be used to add filter to mp4.
 - PinFilter is based on Android MediaCodec and MediaMuxer,All video decode or encode by hardware.
@@ -17,7 +15,8 @@
 4. Decode MP4 and Regenerate MP4 with Filter
 
 ## Preview
-<iframe height=500 width=500 src="http://ww4.sinaimg.cn/mw690/e75a115bgw1f3rrbzv1m8g209v0diqv7.gif">
+![](ezgif.com-optimize.gif)
+
 
 ##Getting started
 - In your ` build.gradle`:
