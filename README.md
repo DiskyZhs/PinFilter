@@ -1,6 +1,6 @@
 # PinFilter
 [![CocoaPods](https://img.shields.io/badge/Android%20-4.3%2B-brightgreen.svg)]()     [![CircleCI](https://img.shields.io/circleci/project/github/RedSparr0w/node-csgo-parser.svg)]()
-
+<br/>
 @[Filter, Camera, Player, Recorder]
 
 ##Introduction
@@ -16,7 +16,7 @@
 
 ## Preview
 ![](ezgif.com-optimize.gif)
-
+<br/>
 
 ##Getting started
 - In your ` build.gradle`:
@@ -29,6 +29,7 @@
     dependencies {
     compile project(path: ':libRecorderEditor')
     }
+
 
 ##Usage
 - reference demo project
