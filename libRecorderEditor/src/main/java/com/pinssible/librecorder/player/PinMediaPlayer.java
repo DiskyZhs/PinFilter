@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.Surface;
+import android.view.View;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -35,6 +36,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
+import com.pinssible.librecorder.view.GLTextureView;
 
 /**
  * Created by ZhangHaoSong on 2017/10/20.
@@ -46,18 +48,18 @@ public class PinMediaPlayer {
     private Uri sourceUri; //暂定 本地播放 本地播放地址
     private Context context;
     private SimpleExoPlayer exoPlayer;
-    private GLSurfaceView preview;
+    private View preview;
     private PlayerRender render;
 
-    public PinMediaPlayer(Context context, Uri sourcePath) {
+    public PinMediaPlayer(Context context, Uri sourcePath) throws Exception{
         this(context, sourcePath, null);
     }
 
-    public PinMediaPlayer(Context context, Uri sourcePath,boolean isLoop) {
+    public PinMediaPlayer(Context context, Uri sourcePath,boolean isLoop) throws Exception{
         this(context, sourcePath, null,true);
     }
 
-    public PinMediaPlayer(Context context, Uri sourcePath, GLSurfaceView preview,boolean isLoop){
+    public PinMediaPlayer(Context context, Uri sourcePath, View preview,boolean isLoop) throws Exception{
         this.sourceUri = sourcePath;
         this.context = context;
         this.preview = preview;
@@ -77,8 +79,15 @@ public class PinMediaPlayer {
                 dataSourceFactory, extractorsFactory, null, null);
         //create render
         if (preview != null) {
-            render = new PlayerRender(context, preview, exoPlayer);
-            preview.setRenderer(render);
+            if(preview instanceof GLSurfaceView) {
+                render = new PlayerRender(context, (GLSurfaceView)preview, exoPlayer);
+                ((GLSurfaceView)preview).setRenderer(render);
+            }else if(preview instanceof GLTextureView) {
+                render = new PlayerRender(context, (GLTextureView)preview, exoPlayer);
+                ((GLTextureView)preview).setRenderer(render);
+            }else{
+                throw new Exception("you should set GlSurfaceView or GlTextureView as preview view");
+            }
         }
         if(isLoop) {
             // Prepare the player with the source.
@@ -89,15 +98,24 @@ public class PinMediaPlayer {
         }
     }
 
-    public PinMediaPlayer(Context context, Uri sourcePath, GLSurfaceView preview) {
+
+    public PinMediaPlayer(Context context, Uri sourcePath, View preview) throws Exception{
         this(context, sourcePath, preview,false);
     }
 
-    public void setPreview(GLSurfaceView preview) {
+
+    public void setPreview(View preview) throws Exception{
         if (exoPlayer != null) {
             this.preview = preview;
-            render = new PlayerRender(context, preview, exoPlayer);
-            preview.setRenderer(render);
+            if(preview instanceof GLSurfaceView) {
+                render = new PlayerRender(context, (GLSurfaceView)preview, exoPlayer);
+                ((GLSurfaceView)preview).setRenderer(render);
+            }else if(preview instanceof GLTextureView) {
+                render = new PlayerRender(context, (GLTextureView)preview, exoPlayer);
+                ((GLTextureView)preview).setRenderer(render);
+            }else{
+                throw new Exception("you should set GlSurfaceView or GlTextureView as preview view");
+            }
         }
     }
 
@@ -143,7 +161,7 @@ public class PinMediaPlayer {
         return exoPlayer;
     }
 
-    public GLSurfaceView getPreview() {
+    public View getPreview() {
         return preview;
     }
 

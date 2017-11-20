@@ -12,6 +12,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.View;
 
 import com.pinssible.librecorder.base.FullFrameRect;
 import com.pinssible.librecorder.base.Viewport;
@@ -19,6 +20,8 @@ import com.pinssible.librecorder.camera.CameraInstance;
 import com.pinssible.librecorder.filter.Filters;
 import com.pinssible.librecorder.filter.program.LerpBlurGpuProgram;
 import com.pinssible.librecorder.filter.program.Program;
+import com.pinssible.librecorder.gles.RenderListener;
+import com.pinssible.librecorder.view.GLTextureView;
 
 import java.nio.IntBuffer;
 
@@ -29,7 +32,7 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by ZhangHaoSong on 2017/9/27.
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
+public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener, RenderListener {
     public static final String LOG_TAG = "CameraSurfaceRender";
     private Context context;
 
@@ -58,7 +61,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
     protected int mTextureID;
 
     //preview
-    private GLSurfaceView mPreview;
+    private View mPreview;
     private float[] _transformMatrix = new float[16];
     private Viewport mPreviewViewport = new Viewport();
     public boolean mFitFullView = true; //当RecordSize和PreviewSize不一致时是否进行缩放
@@ -104,6 +107,26 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
         mFitFullView = config.isPreviewFitView();
     }
 
+
+    public CameraSurfaceRender(Context context, GLTextureView preview, PreviewConfig config, int displayRotation) {
+        this.context = context;
+
+        this.mPreview = preview;
+
+        clearColor = new ClearColor();
+
+        this.cameraInstance = CameraInstance.getInstance(context);
+
+        previewConfig = config;
+
+        mCurrentFilter = config.getInitState().getFilter();
+        mNewFilter = mCurrentFilter;
+
+        this.displayRotation = displayRotation;
+        mFitFullView = config.isPreviewFitView();
+    }
+
+
 //    public CameraSurfaceRender(Context context, GLSurfaceView preview, RecorderConfig config, int displayRotation) {
 //        this.context = context;
 //
@@ -128,13 +151,14 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
 //    }
 
     /********************************************************************* Render 回调 *************************************************************************************************************************************/
+
     @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    public void onSurfaceCreated() {
         Log.e(LOG_TAG, "onSurfaceCreated");
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
+    public void onSurfaceChanged(int width, int height) {
         Log.e(LOG_TAG, String.format("onSurfaceChanged: %d x %d", width, height));
         GLES20.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a); //设置Clear的颜色
 
@@ -152,7 +176,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
     }
 
     @Override
-    public void onDrawFrame(GL10 gl) {
+    public void onDrawFrame() {
         //blur
         if (blurIntensityChanged && isBlur && mFullScreenCamera.getProgram() instanceof LerpBlurGpuProgram) {
             ((LerpBlurGpuProgram) mFullScreenCamera.getProgram()).setIntensity(blurIntensity);
@@ -206,6 +230,22 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
         movieEncoder.frameAvailable(mSurfaceTexture);
     }
 
+
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        onSurfaceCreated();
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
+        onSurfaceChanged(width, height);
+    }
+
+    @Override
+    public void onDrawFrame(GL10 gl) {
+        onDrawFrame();
+    }
+
     /**
      * 获取到预览viewsize后计算previewSize并初始化preview，record
      */
@@ -239,7 +279,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
         //Log.e(LOG_TAG,"Test onFrameAvailable on Thread = " + Thread.currentThread().getName());
-        mPreview.requestRender();
+        requestRender();
     }
 
     /********************************************************************* Camera *************************************************************************************************************************************/
@@ -270,7 +310,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
                     }
                 }
             }, facing, displayRotation);
-            mPreview.requestRender();
+            requestRender();
         }
     }
 
@@ -341,7 +381,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
         clearColor.g = g;
         clearColor.b = b;
         clearColor.a = a;
-        mPreview.queueEvent(new Runnable() {
+        queueEvent(new Runnable() {
             @Override
             public void run() {
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
@@ -355,7 +395,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
     public void startRecording() {
         if (recorderConfig != null) {
             mRecordingEnabled = true;
-            mPreview.queueEvent(new Runnable() {
+            queueEvent(new Runnable() {
                 @Override
                 public void run() {
                     if (movieEncoder != null) {
@@ -371,7 +411,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
     public void startRecording(RecorderConfig config) {
         mRecordingEnabled = true;
         this.recorderConfig = config;
-        mPreview.queueEvent(new Runnable() {
+        queueEvent(new Runnable() {
             @Override
             public void run() {
                 if (movieEncoder != null) {
@@ -384,7 +424,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
 
     public void stopRecording() {
         mRecordingEnabled = false;
-        mPreview.queueEvent(new Runnable() {
+        queueEvent(new Runnable() {
             @Override
             public void run() {
                 if (movieEncoder != null)
@@ -425,7 +465,7 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
             return;
         }
 
-        mPreview.queueEvent(new Runnable() {
+        queueEvent(new Runnable() {
             @Override
             public void run() {
                 final int bitmapBuffer[] = new int[mPreviewViewport.width * mPreviewViewport.height];
@@ -539,7 +579,24 @@ public class CameraSurfaceRender implements GLSurfaceView.Renderer, SurfaceTextu
     public synchronized void autoFocus() {
         cameraInstance.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
     }
+
     /********************************************************************* Others *************************************************************************************************************************************/
+
+    private void requestRender() {
+        if (mPreview instanceof GLSurfaceView) {
+            ((GLSurfaceView) mPreview).requestRender();
+        } else if (mPreview instanceof GLTextureView) {
+            ((GLTextureView) mPreview).requestRender();
+        }
+    }
+
+    private void queueEvent(Runnable runnable) {
+        if (mPreview instanceof GLSurfaceView) {
+            ((GLSurfaceView) mPreview).queueEvent(runnable);
+        } else if (mPreview instanceof GLTextureView) {
+            ((GLTextureView) mPreview).queueEvent(runnable);
+        }
+    }
 
     /**
      * Draws a red box in the corner.

@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 
 import com.blankj.utilcode.util.BarUtils;
 import com.blankj.utilcode.util.PermissionUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.pinssible.librecorder.player.PinMediaPlayer;
 import com.pinssible.librecorder.player.SimplePinPlayerView;
 
@@ -46,10 +47,16 @@ public class PlayerActivity extends Activity {
         filterBtn = findViewById(R.id.btn_filter);
 
         //player
-        String outputPath ="file:///android_asset/test.mp4";
+        String outputPath = "file:///android_asset/test.mp4";
         Uri source = Uri.parse(outputPath);
-        player = new PinMediaPlayer(this, source,true);
-        previewSurface.setPlayer(player);
+        try {
+            player = new PinMediaPlayer(this, source, true);
+            previewSurface.setPlayer(player);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastUtils.showShort("create player fail cause = " + e.toString());
+        }
+
 
         //filter
         filterBtn.setOnClickListener(new View.OnClickListener() {

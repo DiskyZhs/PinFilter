@@ -40,6 +40,7 @@ import com.google.android.exoplayer2.ui.SubtitleView;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.RepeatModeUtil;
 import com.google.android.exoplayer2.util.Util;
+import com.pinssible.librecorder.view.GLTextureView;
 
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class SimplePinPlayerView extends FrameLayout {
     private boolean controllerHideOnTouch;
 
     //修改部分
-    private final GLSurfaceView surfaceView;
+    private final GLTextureView surfaceView;
     private PinMediaPlayer player;
 
     public SimplePinPlayerView(Context context) {
@@ -146,7 +147,7 @@ public class SimplePinPlayerView extends FrameLayout {
         if (contentFrame != null) {
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            surfaceView = new GLSurfaceView(context);
+            surfaceView = new GLTextureView(context);
             surfaceView.setLayoutParams(params);
             contentFrame.addView(surfaceView, 0);
         } else {
@@ -236,7 +237,7 @@ public class SimplePinPlayerView extends FrameLayout {
      *
      * @param player The {@link SimpleExoPlayer} to use.
      */
-    public void setPlayer(PinMediaPlayer player) {
+    public void setPlayer(PinMediaPlayer player) throws Exception {
         if (this.player == player) {
             return;
         }
@@ -255,6 +256,7 @@ public class SimplePinPlayerView extends FrameLayout {
         }
 
         player.setPreview(surfaceView);
+
         if (getPlayer() != null) {
             getPlayer().addVideoListener(componentListener);
             getPlayer().addTextOutput(componentListener);
@@ -267,14 +269,14 @@ public class SimplePinPlayerView extends FrameLayout {
         }
     }
 
-    @Override
-    public void setVisibility(int visibility) {
-        super.setVisibility(visibility);
-        if (surfaceView instanceof SurfaceView) {
-            // Work around https://github.com/google/ExoPlayer/issues/3160
-            surfaceView.setVisibility(visibility);
-        }
-    }
+//    @Override
+//    public void setVisibility(int visibility) {
+//        super.setVisibility(visibility);
+//        if (surfaceView instanceof SurfaceView) {
+//            // Work around https://github.com/google/ExoPlayer/issues/3160
+//            surfaceView.setVisibility(visibility);
+//        }
+//    }
 
     /**
      * Sets the resize mode.

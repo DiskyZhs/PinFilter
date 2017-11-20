@@ -10,6 +10,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.Surface;
+import android.view.View;
 
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.pinssible.librecorder.base.FullFrameRect;
@@ -17,6 +18,8 @@ import com.pinssible.librecorder.base.Viewport;
 import com.pinssible.librecorder.filter.Filters;
 import com.pinssible.librecorder.filter.program.LerpBlurGpuProgram;
 import com.pinssible.librecorder.filter.program.Program;
+import com.pinssible.librecorder.gles.RenderListener;
+import com.pinssible.librecorder.view.GLTextureView;
 
 import java.nio.IntBuffer;
 
@@ -27,7 +30,7 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by ZhangHaoSong on 2017/9/27.
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
+public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener, RenderListener {
     public static final String LOG_TAG = "CameraSurfaceRender";
     private Context context;
 
@@ -49,7 +52,7 @@ public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
     protected int mTextureID;
 
     //preview
-    private GLSurfaceView mPreview;
+    private View mPreview;
     private float[] _transformMatrix = new float[16];
     private Viewport mPreviewViewport = new Viewport();
     public boolean mFitFullView = true; //当RecordSize和PreviewSize不一致时是否进行缩放
@@ -88,6 +91,25 @@ public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
         this.simpleExoPlayer = simpleExoPlayer;
     }
 
+    public PlayerRender(Context context, GLTextureView preview, SimpleExoPlayer simpleExoPlayer) {
+        this.context = context;
+
+        this.mPreview = preview;
+
+        clearColor = new ClearColor();
+        clearColor.r = 0.0f;
+        clearColor.g = 0.0f;
+        clearColor.b = 0.0f;
+        clearColor.a = 1.0f;
+
+        mCurrentFilter = -1;
+        mNewFilter = mCurrentFilter;
+
+        //player
+        this.simpleExoPlayer = simpleExoPlayer;
+    }
+
+
     public PlayerRender(Context context, GLSurfaceView preview, SimpleExoPlayer simpleExoPlayer, boolean previewFitView) {
         this(context, preview, simpleExoPlayer);
         mFitFullView = previewFitView;
@@ -95,26 +117,25 @@ public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
 
     /********************************************************************* Render 回调 *************************************************************************************************************************************/
     @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    public void onSurfaceCreated() {
         Log.e(LOG_TAG, "onSurfaceCreated");
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
+    public void onSurfaceChanged(int width, int height) {
         Log.e(LOG_TAG, String.format("onSurfaceChanged: %d x %d", width, height));
         GLES20.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a); //设置Clear的颜色
 
         //get ViewSize
         if (mSurfaceTexture == null) { //need init
-            initWithViewSize(width,height);
+            initWithViewSize(width, height);
         } else {
             //todo resetSize for preview and encoder
         }
-
     }
 
     @Override
-    public void onDrawFrame(GL10 gl) {
+    public void onDrawFrame() {
         //Log.e(LOG_TAG,"onDrawFrame");
         //blur
         if (blurIntensityChanged && isBlur && mFullScreenRect.getProgram() instanceof LerpBlurGpuProgram) {
@@ -155,11 +176,21 @@ public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
         GLES20.glEnable(GLES20.GL_BLEND);
         mFullScreenRect.drawFrame(mTextureID, _transformMatrix); //纹理变化
         GLES20.glDisable(GLES20.GL_BLEND);
+    }
 
-//        // Draw a flashing box if we're recording.  This only appears on screen.
-//        if (mRecordingEnabled && (++mFrameCount & 0x04) == 0) {
-//            drawBox();
-//        }
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        onSurfaceCreated();
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
+        onSurfaceChanged(width, height);
+    }
+
+    @Override
+    public void onDrawFrame(GL10 gl) {
+        onDrawFrame();
     }
 
     /**
@@ -200,7 +231,7 @@ public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
 
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-        mPreview.requestRender();
+        requestRender();
     }
 
     /********************************************************************* Others Setting *************************************************************************************************************************************/
@@ -213,7 +244,7 @@ public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
         clearColor.g = g;
         clearColor.b = b;
         clearColor.a = a;
-        mPreview.queueEvent(new Runnable() {
+        queueEvent(new Runnable() {
             @Override
             public void run() {
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
@@ -247,7 +278,7 @@ public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
             return;
         }
 
-        mPreview.queueEvent(new Runnable() {
+        queueEvent(new Runnable() {
             @Override
             public void run() {
                 final int bitmapBuffer[] = new int[mPreviewViewport.width * mPreviewViewport.height];
@@ -353,6 +384,22 @@ public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
 
     /********************************************************************* Others *************************************************************************************************************************************/
 
+    private void requestRender() {
+        if (mPreview instanceof GLSurfaceView) {
+            ((GLSurfaceView) mPreview).requestRender();
+        } else if (mPreview instanceof GLTextureView) {
+            ((GLTextureView) mPreview).requestRender();
+        }
+    }
+
+    private void queueEvent(Runnable runnable) {
+        if (mPreview instanceof GLSurfaceView) {
+            ((GLSurfaceView) mPreview).queueEvent(runnable);
+        } else if (mPreview instanceof GLTextureView) {
+            ((GLTextureView) mPreview).queueEvent(runnable);
+        }
+    }
+
     /**
      * Draws a red box in the corner.
      */
@@ -367,34 +414,8 @@ public class PlayerRender implements GLSurfaceView.Renderer, SurfaceTexture.OnFr
 
     protected void calcViewport() {
         //todo 暂时设置为viewsize（后面再通过获取时机尺寸进行计算）
-//        float scaling = recorderConfig.videoEncoderConfig.mWidth / (float) recorderConfig.videoEncoderConfig.mHeight;
         int viewWidth = mPreview.getWidth();
         int viewHeight = mPreview.getHeight();
-
-//        float viewRatio = viewWidth / (float) viewHeight;
-//        float s = scaling / viewRatio;
-//
-//        int w, h;
-//
-//        if (mFitFullView) {
-//            //撑满全部view(内容大于view)
-//            if (s > 1.0) {
-//                w = (int) (viewHeight * scaling);
-//                h = viewHeight;
-//            } else {
-//                w = viewWidth;
-//                h = (int) (viewWidth / scaling);
-//            }
-//        } else {
-//            //显示全部内容(内容小于view)
-//            if (s > 1.0) {
-//                w = viewWidth;
-//                h = (int) (viewWidth / scaling);
-//            } else {
-//                h = viewHeight;
-//                w = (int) (viewHeight * scaling);
-//            }
-//        }
 
         mPreviewViewport.width = viewWidth;
         mPreviewViewport.height = viewHeight;

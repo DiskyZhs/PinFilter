@@ -10,6 +10,9 @@ import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+
+import com.pinssible.librecorder.view.GLTextureView;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +29,6 @@ public class AVRecorder {
 
     //Camera
     private CameraSurfaceRender cameraRender;
-    private GLSurfaceView surfaceView;
 
     //Audio
     private MicrophoneEncoder microphoneEncoder;
@@ -37,12 +39,29 @@ public class AVRecorder {
     //display rotation
     private int displayRotation = 0;
 
+    private View previewView;
+
     public AVRecorder(PreviewConfig previewConfig, RecorderConfig config, GLSurfaceView cameraRecordGLSurfaceView2) throws Exception {
         this.recorderConfig = config;
-        this.surfaceView = cameraRecordGLSurfaceView2;
+        this.previewView = cameraRecordGLSurfaceView2;
         displayRotation = getDisplayRotation(cameraRecordGLSurfaceView2.getContext());
-        this.cameraRender = new CameraSurfaceRender(cameraRecordGLSurfaceView2.getContext(), surfaceView, previewConfig, displayRotation);
-        surfaceView.setRenderer(cameraRender);
+        this.cameraRender = new CameraSurfaceRender(cameraRecordGLSurfaceView2.getContext(), cameraRecordGLSurfaceView2, previewConfig, displayRotation);
+        cameraRecordGLSurfaceView2.setRenderer(cameraRender);
+        this.microphoneEncoder = new MicrophoneEncoder(config);
+        Log.e(LOG_TAG, "displayRotation = " + displayRotation);
+        //size
+        if (previewConfig.getPreviewSize().getWidth() != config.videoEncoderConfig.mWidth || previewConfig.getPreviewSize().getHeight() != config.videoEncoderConfig.mHeight) {
+            throw new Exception("preview Size should equal record size");
+        }
+    }
+
+
+    public AVRecorder(PreviewConfig previewConfig, RecorderConfig config, GLTextureView glTextureView) throws Exception {
+        this.recorderConfig = config;
+        this.previewView = glTextureView;
+        displayRotation = getDisplayRotation(glTextureView.getContext());
+        this.cameraRender = new CameraSurfaceRender(glTextureView.getContext(), glTextureView, previewConfig, displayRotation);
+        glTextureView.setRenderer(cameraRender);
         this.microphoneEncoder = new MicrophoneEncoder(config);
         Log.e(LOG_TAG, "displayRotation = " + displayRotation);
         //size
@@ -186,7 +205,7 @@ public class AVRecorder {
     }
 
     public void resumePreview() {
-        cameraRender.resumePreview();
+
     }
 
     private int getDisplayRotation(Context context) {

@@ -21,6 +21,7 @@ import com.pinssible.librecorder.recorder.AVRecorder;
 import com.pinssible.librecorder.recorder.CameraSurfaceRender;
 import com.pinssible.librecorder.recorder.PreviewConfig;
 import com.pinssible.librecorder.recorder.RecorderConfig;
+import com.pinssible.librecorder.view.GLTextureView;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class CameraCaptureActivity extends AppCompatActivity {
 
     private boolean isBlur = false;
 
-    private GLSurfaceView preview;
+    private GLTextureView preview;
 
     private Button recordBnt, photoBtn, filterBtn, faceBtn, flashBtn, blurBtn;
 

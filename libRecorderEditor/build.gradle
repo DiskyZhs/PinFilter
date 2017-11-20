@@ -73,7 +73,7 @@ publish {
     userOrg = 'diskyzhs'
     groupId = 'com.pinssible'
     artifactId = 'pin-filter'
-    publishVersion = '0.0.1'
+    publishVersion = '0.0.2'
     repoName = 'PinFilter'
     desc = 'This is a lib to add filter for camera or mp4 preview! Record camera or Remux mp4 with mp4'
     website = 'https://github.com/DiskyZhs/PinFilter'

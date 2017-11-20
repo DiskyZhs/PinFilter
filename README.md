@@ -23,7 +23,7 @@ Getting started
 - In your ` build.gradle`:
 ```
     dependencies {
-        compile 'com.pinssible:pin-filter:0.0.1'
+        compile 'com.pinssible:pin-filter:0.0.2'
     }
 ```
 - Or you can clone the project get the Lib   `libRecorderEditor`,Import it to your project:
